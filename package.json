@@ -1,0 +1,34 @@
+{
+  "name": "time-slot",
+  "version": "1.0.0",
+  "description": "Generate time slots between a start and end time, with or without intervals between.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test",
+    "build": "node build-script"
+  },
+  "author": {
+    "name": "Andrew Trigg",
+    "email": "andrew.s.trigg@gmail.com"
+  },
+  "dependencies": {
+    "time-drift": "^1.0.2"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "uglifyify": "^5.0.1"
+  },
+  "keywords": [
+    "time",
+    "intervals",
+    "slots",
+    "timeslots",
+    "window"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/too-old-to-code/time-slot/issues"
+  }
+}
