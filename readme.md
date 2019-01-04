@@ -32,8 +32,8 @@ The optional options object accepts the following properties:
 | pushToEndTime | Ensure last slot ends on the end time   | Boolean     | false   |
 
 
-When you enter the times, you can opt to include seconds or not.  
-Both HH:MM:SS and HH:MM are valid, but if you do not include seconds, you cannot use seconds as the unit for either the slotDuration or the spacer.  
+When you enter the times, you can opt to include seconds or not.
+Both HH:MM:SS and HH:MM are valid, but if you do not include seconds, you cannot use seconds as the unit for either the slotDuration or the spacer.
 
 ```
 let mySlots = timeSlot('03:35', '10:00', 30)
@@ -49,7 +49,7 @@ console.log(timeSlot('03:35', '05:30', 25))
 //	[ 	[ '03:35', '04:00' ],
 // 		[ '04:00', '04:25' ],
 // 		[ '04:25', '04:50' ],
-// 		[ '04:50', '05:15' ] 	
+// 		[ '04:50', '05:15' ]
 //	]
 
 let options = { joinOn: ' until ', delimiter: '.' }
@@ -59,7 +59,7 @@ console.log(timeSlot('03:35', '05:30', 25, options))
 //	[ 	'03.35 until 04.00',
 //		'04.00 until 04.25',
 //		'04.25 until 04.50',
-//		'04.50 until 05.15' 	
+//		'04.50 until 05.15'
 //	]
 
 ```
@@ -74,7 +74,7 @@ console.log(timeSlot('03:35', '05:30', 25, options))
 // [ 	'03:50 - 04:15',
 // 		'04:15 - 04:40',
 // 		'04:40 - 05:05',
-//		'05:05 - 05:30' 	
+//		'05:05 - 05:30'
 //	]
 
 ```
@@ -89,7 +89,7 @@ console.log(timeSlot('23:58:07', '00:10:10', 110, options))
 //	[ 	[ '23:58:07', '23:59:57' ],
 //  	[ '00:00:42', '00:02:32' ],
 //		[ '00:03:17', '00:05:07' ],
-//		[ '00:05:52', '00:07:42' ] 	
+//		[ '00:05:52', '00:07:42' ]
 //	]
 ```
 
@@ -101,7 +101,7 @@ options = { units: 'h', spacer: 70, spacerUnits: 'm' }
 let blocks = timeSlot('09:00', '19:30', 2, options)
 
 
-let partitions = blocks.reduce((acc, curr) => 
+let partitions = blocks.reduce((acc, curr) =>
 	[].concat(acc, timeSlot(curr[0],curr[1], 20, {units: 'm'}), '<------->' ),
 [])
 
@@ -113,7 +113,7 @@ console.log(partitions)
 //  	[ '09:20', '09:40' ],
 //  	[ '09:40', '10:00' ],
 //  	[ '10:00', '10:20' ],
-// 		[ '10:20', '10:40' ],
+//    [ '10:20', '10:40' ],
 // 		[ '10:40', '11:00' ],
 //  	'<------->',
 //  	[ '12:10', '12:30' ],
@@ -129,7 +129,7 @@ console.log(partitions)
 //  	[ '16:20', '16:40' ],
 //  	[ '16:40', '17:00' ],
 //  	[ '17:00', '17:20' ],
-//  	'<------->' 
+//  	'<------->'
 // ]
 
 
