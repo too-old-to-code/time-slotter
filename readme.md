@@ -1,6 +1,15 @@
 ## TimeSlotter
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![circleci](https://img.shields.io/circleci/project/github/too-old-to-code/time-slotter.svg)](https://circleci.com/gh/too-old-to-code/time-slotter/tree/master) [![](https://david-dm.org/too-old-to-code/time-slotter.svg)](https://david-dm.org/too-old-to-code/time-slotter)
 
 This is a small package to create a set of timeslots between two times. It can do this with time gaps in between each slot, or not.
+
+### Browser
+```
+<script src="dist/time-slotter.js"></script>
+<script>
+  let slots = timeSlotter('10:00', '15:45', 35)
+</script>
+```
 
 ### Node
 

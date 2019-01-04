@@ -1,6 +1,6 @@
 {
   "name": "time-slotter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate time slots between a start and end time, with or without intervals between.",
   "main": "index.js",
   "scripts": {
