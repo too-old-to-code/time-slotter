@@ -3,10 +3,6 @@
 var expect = require('chai').expect
 var timeSlotter = require('../src/time-slotter')
 
-var errorMessages = {
-
-}
-
 describe('gives correct timeslots', function () {
   describe('without using options',function(){
     it('without crossing midnight', function(done) {
@@ -79,6 +75,17 @@ describe('gives correct timeslots', function () {
         done()
       })
     })
+
+    describe('when spacer is used', function () {
+      it('will return timeslots with spaces between', function (done) {
+        let slots = timeSlotter('10:35','16:56', 65, {spacer: 20})
+        expect(slots[0][0]).to.be.equal('10:35')
+        expect(slots[0][1]).to.not.be.equal(slots[1][0])
+        expect(slots.length).to.be.equal(4)
+        expect(slots[3][1]).to.be.equal('15:55')
+        done()
+      })
+    })
   })
 
   describe('when timeslots are pushed to end time', function() {
@@ -118,6 +125,17 @@ describe('gives correct timeslots', function () {
         expect(slots[0][1]).to.be.equal(slots[1][0])
         expect(slots.length).to.be.equal(2)
         expect(slots[1][1]).to.be.equal('02:01:00')
+        done()
+      })
+    })
+
+    describe('when spacer is used', function () {
+      it('will return timeslots with spaces between', function (done) {
+        let slots = timeSlotter('10:35','16:56', 65, {spacer: 20, pushToEndTime: true})
+        expect(slots[0][0]).to.be.equal('11:36')
+        expect(slots[0][1]).to.not.be.equal(slots[1][0])
+        expect(slots.length).to.be.equal(4)
+        expect(slots[3][1]).to.be.equal('16:56')
         done()
       })
     })

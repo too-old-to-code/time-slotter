@@ -1,8 +1,8 @@
 {
   "name": "time-slotter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate time slots between a start and end time, with or without intervals between.",
-  "main": "index.js",
+  "main": "dist/time-slotter.js",
   "scripts": {
     "test": "mocha test",
     "build": "node build-script"
@@ -25,7 +25,8 @@
     "intervals",
     "slots",
     "timeslots",
-    "window"
+    "window",
+    "timeblocks"
   ],
   "license": "MIT",
   "bugs": {
