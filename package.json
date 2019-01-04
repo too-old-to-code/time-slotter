@@ -1,5 +1,5 @@
 {
-  "name": "time-slot",
+  "name": "time-slotter",
   "version": "1.0.0",
   "description": "Generate time slots between a start and end time, with or without intervals between.",
   "main": "index.js",
@@ -29,6 +29,6 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/too-old-to-code/time-slot/issues"
+    "url": "https://github.com/too-old-to-code/time-slotter/issues"
   }
 }

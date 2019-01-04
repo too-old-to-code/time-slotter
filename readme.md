@@ -1,23 +1,23 @@
-## TimeSlot
+## TimeSlotter
 
 This is a small package to create a set of timeslots between two times. It can do this with time gaps in between each slot, or not.
 
 ### Node
 
 ```
-npm install time-slot
+npm install time-slotter
 ```
 
 And then require it into your app like so:
 
 ```
-let timeSlot = require('time-slot')
+let timeSlotter = require('time-slotter')
 ```
 
 ### Usage
 
 ```
-timeSlot(startTime, endTime, slotDuration [,options])
+timeSlotter(startTime, endTime, slotDuration [,options])
 ```
 
 The optional options object accepts the following properties:
@@ -36,15 +36,15 @@ When you enter the times, you can opt to include seconds or not.
 Both HH:MM:SS and HH:MM are valid, but if you do not include seconds, you cannot use seconds as the unit for either the slotDuration or the spacer.
 
 ```
-let mySlots = timeSlot('03:35', '10:00', 30)
+let mySlots = timeSlotter('03:35', '10:00', 30)
 ```
 
-An array of arrays is returned when you invoke timeSlot. Each nested array represents a time-slot, with a start and end time. If you decide to use the `joinOn` options, then an array of strings is returned according to the string you chose to join on.
+An array of arrays is returned when you invoke timeSlotter. Each nested array represents a time-slot, with a start and end time. If you decide to use the `joinOn` options, then an array of strings is returned according to the string you chose to join on.
 
 ### Example:
 
 ```
-console.log(timeSlot('03:35', '05:30', 25))
+console.log(timeSlotter('03:35', '05:30', 25))
 
 //	[ 	[ '03:35', '04:00' ],
 // 		[ '04:00', '04:25' ],
@@ -54,7 +54,7 @@ console.log(timeSlot('03:35', '05:30', 25))
 
 let options = { joinOn: ' until ', delimiter: '.' }
 
-console.log(timeSlot('03:35', '05:30', 25, options))
+console.log(timeSlotter('03:35', '05:30', 25, options))
 
 //	[ 	'03.35 until 04.00',
 //		'04.00 until 04.25',
@@ -69,7 +69,7 @@ If timeslots don't fit exactly between the given times, you can decide to make t
 ```
 let options = { joinOn: ' - ', pushToEndTime: true }
 
-console.log(timeSlot('03:35', '05:30', 25, options))
+console.log(timeSlotter('03:35', '05:30', 25, options))
 
 // [ 	'03:50 - 04:15',
 // 		'04:15 - 04:40',
@@ -84,7 +84,7 @@ Valid values for the `units` and `spacerUnits` of the options object are: `h`, `
 ```
 let options = { units: 's', spacer: 45, spacerUnits: 's' }
 
-console.log(timeSlot('23:58:07', '00:10:10', 110, options))
+console.log(timeSlotter('23:58:07', '00:10:10', 110, options))
 
 //	[ 	[ '23:58:07', '23:59:57' ],
 //  	[ '00:00:42', '00:02:32' ],
@@ -98,11 +98,11 @@ Because of the way the time-slots are returned, it gives you the opportunity to 
 ```
 options = { units: 'h', spacer: 70, spacerUnits: 'm' }
 
-let blocks = timeSlot('09:00', '19:30', 2, options)
+let blocks = timeSlotter('09:00', '19:30', 2, options)
 
 
 let partitions = blocks.reduce((acc, curr) =>
-	[].concat(acc, timeSlot(curr[0],curr[1], 20, {units: 'm'}), '<------->' ),
+	[].concat(acc, timeSlotter(curr[0],curr[1], 20, {units: 'm'}), '<------->' ),
 [])
 
 // '<------>' was only added to show the division between blocks clearly
