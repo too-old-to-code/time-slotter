@@ -56,13 +56,14 @@ module.exports = (function () {
     if (_start < _end) {
       if (testTime.val > _end || testTime.hasCrossedMidnight) {
         _finished = true
+        console.warn('The duration is too too small for even one time-slot')
       }
     } else {
       if (testTime.val > _end && testTime.hasCrossedMidnight) {
         _finished = true
+        console.warn('The duration is too too small for even one time-slot')
       }
     }
-    console.warn('The duration is too too small for even one time-slot')
   }
 
   function _checkIsMidnightCrossed () {
