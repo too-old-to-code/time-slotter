@@ -8,7 +8,7 @@ module.exports = (function () {
       _end,
       _slots,
       _units,
-      _hasCrossedMidnight,
+      _hasEverCrossedMidnight,
       _spacer,
       _spacerUnits,
       _pushToEndTime,
@@ -23,7 +23,7 @@ module.exports = (function () {
     _slots = []
     _finished = false
     _pushToEndTime = false
-    _hasCrossedMidnight = false
+    _hasEverCrossedMidnight = false
     _timeObject = timeDrift(initialTime, options.delimiter)
     _slotDuration = slotDuration
     _units = options.units || 'm'
@@ -38,6 +38,8 @@ module.exports = (function () {
     _start = timeDrift(start, options.delimiter).val
     _end = timeDrift(end, options.delimiter).val
 
+    _checkIsValid()
+
     _slots = start < end ? _noMidnightCrossing() : _crossesMidnight();
 
     if (options.joinOn) {
@@ -47,9 +49,25 @@ module.exports = (function () {
     return _slots
   }
 
+  // finish immediately if the _slotDuration is too small for even
+  // one time-slot
+  function _checkIsValid() {
+    const testTime = timeDrift(_start).add(_slotDuration,  _units)
+    if (_start < _end) {
+      if (testTime.val > _end || testTime.hasCrossedMidnight) {
+        _finished = true
+      }
+    } else {
+      if (testTime.val > _end && testTime.hasCrossedMidnight) {
+        _finished = true
+      }
+    }
+    console.warn('The duration is too too small for even one time-slot')
+  }
+
   function _checkIsMidnightCrossed () {
     if (_timeObject.hasCrossedMidnight) {
-      _hasCrossedMidnight = true
+      _hasEverCrossedMidnight = true
     }
   }
 
@@ -75,6 +93,7 @@ module.exports = (function () {
   // in creating the required time-slots, this logic will
   // be used
   function _noMidnightCrossing() {
+
     if (_pushToEndTime) {
       while ((_timeObject.val >= _start) && !_finished) {
         _decrementTime()
@@ -90,7 +109,7 @@ module.exports = (function () {
   // if the time-slots required involve a crossing over the midnight
   // threshhold, we need this logic before it gets to midnight
   function _crossesMidnight() {
-    while (!_hasCrossedMidnight) {
+    while (!_hasEverCrossedMidnight) {
       if (_pushToEndTime) {
         _decrementTime()
       } else {
@@ -103,21 +122,28 @@ module.exports = (function () {
 
   function _addSlotToBack(pre, post) {
 
-    _checkIsMidnightCrossed()
-    // if the time-slot bridges over the _end time,
-    // that time-slot is not acceptable. Set the outer
-    // _finished function to true to stop more slots being
-    // added, unless the _includeOverflow option is set to true
-    if ((pre <= _end && post > _end) && !_includeOverflow) {
+    //we definitely don't want a slot if it begins on the end time, unless
+    // the start and end times given were the same
+    if (pre === _end && !(_start === _end && !_hasEverCrossedMidnight)) {
       _finished = true
     }
 
-    // if the end time is midnight or close to it, the post
-    // and pre values may be either side of the midnight and
-    // require this condition to realise the time-slots are
-    // finished
-    if ((pre > _end && post > _end) && pre > post) {
-      _finished = true
+    _checkIsMidnightCrossed()
+
+    if (!_includeOverflow) {
+
+      // condition to eliminate timeslots that bridge over the end time
+      if (pre < _end && post > _end) {
+        _finished = true
+      }
+
+       // if the end time is midnight or close to it, the post
+      // and pre values may be either side of the midnight and
+      // require this condition to realise the time-slots bridge
+      // the end time
+      if ((pre > _end && post > _end) && pre > post) {
+        _finished = true
+      }
     }
 
     if (!_finished) {
@@ -126,21 +152,28 @@ module.exports = (function () {
   }
 
   function _addSlotToFront (pre, post) {
-    _checkIsMidnightCrossed()
-    // if the time-slot bridges over the _start time,
-    // that time-slot is not acceptable. Set the outer
-    // _finished function to true to stop more slots being
-    // added, unless the _includeOverflow option is set to true
-    if ((pre >= _start && post < _start) && !_includeOverflow) {
+
+    // we definitely don't want a slot if it ends on the start time
+    // the start and end times given were the same
+    if (pre === _start && !(_start === _end && !_hasEverCrossedMidnight)) {
       _finished = true
     }
 
-    // if the end time is midnight or close to it, the post
-    // and pre values may be either side of the midnight and
-    // require this condition to realise the time-slots are
-    // finished
-    if ((pre >= _start && post > _start) && pre < post) {
-      _finished = true
+    _checkIsMidnightCrossed()
+
+    if (!_includeOverflow) {
+      // condition to eliminate timeslots that bridge over the start time
+      if (pre > _start && post < _start) {
+        _finished = true
+      }
+
+      // if the start time is midnight or close to it, the post
+      // and pre values may be either side of the midnight and
+      // require this condition to realise the time-slots bridge
+      // the start time
+      if ((pre > _start && post > _start) && pre < post) {
+        _finished = true
+      }
     }
 
     if (!_finished) {

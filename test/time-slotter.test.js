@@ -166,5 +166,71 @@ describe('gives correct timeslots', function () {
     })
   })
 
+  describe('boundary situations', function () {
+    it('can deal with slots beginning on a boundary with spacer', function(done){
+      let slots1 = timeSlotter('23:00', '00:01', 20, {
+        spacer: 1,
+        pushToEndTime: true
+      })
+      expect(slots1[0][0]).to.be.equal('23:20')
+      expect(slots1.length).to.be.equal(2)
+      expect(slots1[1][1]).to.be.equal('00:01')
+
+      let slots2 = timeSlotter('23:00', '00:01', 20, {
+        spacer: 1
+      })
+      expect(slots2[0][0]).to.be.equal('23:00')
+      expect(slots2.length).to.be.equal(2)
+      expect(slots2[1][1]).to.be.equal('23:41')
+
+      let slots3 = timeSlotter('23:00', '00:01', 20, {
+        includeOverflow: true,
+        spacer: 1,
+        pushToEndTime: true
+      })
+      expect(slots3[0][0]).to.be.equal('22:59')
+      expect(slots3.length).to.be.equal(3)
+      expect(slots3[2][1]).to.be.equal('00:01')
+
+      let slots4 = timeSlotter('23:00', '00:01', 20, {
+        includeOverflow: true,
+        spacer: 1
+      })
+      expect(slots4[0][0]).to.be.equal('23:00')
+      expect(slots4.length).to.be.equal(3)
+      expect(slots4[2][1]).to.be.equal('00:02')
+      done()
+    })
+
+    it('can deal with slots beginning on a boundary', function(done){
+      let slots1 = timeSlotter('23:00', '00:01', 20, {
+        pushToEndTime: true
+      })
+      expect(slots1[0][0]).to.be.equal('23:01')
+      expect(slots1.length).to.be.equal(3)
+      expect(slots1[2][1]).to.be.equal('00:01')
+
+      let slots2 = timeSlotter('23:00', '00:01', 20)
+      expect(slots2[0][0]).to.be.equal('23:00')
+      expect(slots2.length).to.be.equal(3)
+      expect(slots2[2][1]).to.be.equal('00:00')
+
+      let slots3 = timeSlotter('23:00', '00:01', 20, {
+        includeOverflow: true,
+        pushToEndTime: true
+      })
+      expect(slots3[0][0]).to.be.equal('22:41')
+      expect(slots3.length).to.be.equal(4)
+      expect(slots3[3][1]).to.be.equal('00:01')
+
+      let slots4 = timeSlotter('23:00', '00:01', 20, {
+        includeOverflow: true
+      })
+      expect(slots4[0][0]).to.be.equal('23:00')
+      expect(slots4.length).to.be.equal(4)
+      expect(slots4[3][1]).to.be.equal('00:20')
+      done()
+    })
+  })
 
 })
