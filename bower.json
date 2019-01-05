@@ -1,0 +1,28 @@
+{
+  "name": "time-slotter",
+  "description": "Generate time slots between a start and end time, with or without intervals between.",
+  "main": "dist/time-slotter.js",
+  "authors": [
+    {
+      "name": "Andrew Trigg",
+      "email": "andrew.s.trigg@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "time",
+    "intervals",
+    "slots",
+    "timeslots",
+    "window",
+    "timeblocks"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -5,7 +5,7 @@ This is a small package to create a set of timeslots between two times. It can d
 
 ### Browser
 ```
-<script src="dist/time-slotter.js"></script>
+<script src="bower_components/time-slotter/dist/time-slotter.js"></script>
 <script>
   let slots = timeSlotter('10:00', '15:45', 35)
 </script>
@@ -39,6 +39,7 @@ The optional options object accepts the following properties:
 |  delimiter    | The character between the HH:MM:SS      |String       | ":"     |
 |	joinOn       | Join a slot start and slot end with text| String      | null    |
 | pushToEndTime | Ensure last slot ends on the end time   | Boolean     | false   |
+| includeOverflow| Include slots that bridge over the end or start time| Boolean| false|
 
 
 When you enter the times, you can opt to include seconds or not.

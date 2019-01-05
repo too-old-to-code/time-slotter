@@ -12,6 +12,7 @@ module.exports = (function () {
       _spacer,
       _spacerUnits,
       _pushToEndTime,
+      _includeOverflow
       _finished = false
 
   function createTimeslots(start, end, slotDuration, options = {}) {
@@ -29,6 +30,7 @@ module.exports = (function () {
     _pushToEndTime = options.pushToEndTime
     _spacer = options.spacer
     _spacerUnits = options.spacerUnits || 'm'
+    _includeOverflow = options.includeOverflow
 
     // I put the start and end through the timeDrift package
     // to ensure they have the same format, so that comparing
@@ -51,7 +53,7 @@ module.exports = (function () {
     }
   }
 
-  function incrementTime() {
+  function _incrementTime() {
     _addSlotToBack(_timeObject.val, _timeObject.add(_slotDuration, _units).val)
 
     if (_spacer) {
@@ -79,7 +81,7 @@ module.exports = (function () {
       }
     } else {
       while ((_timeObject.val <= _end) && !_finished) {
-        incrementTime()
+        _incrementTime()
       }
     }
     return _slots
@@ -92,7 +94,7 @@ module.exports = (function () {
       if (_pushToEndTime) {
         _decrementTime()
       } else {
-        incrementTime()
+        _incrementTime()
       }
     }
 
@@ -105,8 +107,8 @@ module.exports = (function () {
     // if the time-slot bridges over the _end time,
     // that time-slot is not acceptable. Set the outer
     // _finished function to true to stop more slots being
-    // added
-    if (pre <= _end && post > _end) {
+    // added, unless the _includeOverflow option is set to true
+    if ((pre <= _end && post > _end) && !_includeOverflow) {
       _finished = true
     }
 
@@ -128,8 +130,8 @@ module.exports = (function () {
     // if the time-slot bridges over the _start time,
     // that time-slot is not acceptable. Set the outer
     // _finished function to true to stop more slots being
-    // added
-    if (pre >= _start && post < _start) {
+    // added, unless the _includeOverflow option is set to true
+    if ((pre >= _start && post < _start) && !_includeOverflow) {
       _finished = true
     }
 

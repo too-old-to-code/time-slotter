@@ -86,6 +86,17 @@ describe('gives correct timeslots', function () {
         done()
       })
     })
+
+    describe('when includeOverflow is used', function () {
+      it('will return the slot bridging over the end time', function (done) {
+        let slots = timeSlotter('10:35','16:56', 65, {includeOverflow: true})
+        expect(slots[0][0]).to.be.equal('10:35')
+        expect(slots[0][1]).to.be.equal(slots[1][0])
+        expect(slots.length).to.be.equal(6)
+        expect(slots[5][1]).to.be.equal('17:05')
+        done()
+      })
+    })
   })
 
   describe('when timeslots are pushed to end time', function() {
@@ -136,6 +147,20 @@ describe('gives correct timeslots', function () {
         expect(slots[0][1]).to.not.be.equal(slots[1][0])
         expect(slots.length).to.be.equal(4)
         expect(slots[3][1]).to.be.equal('16:56')
+        done()
+      })
+    })
+
+    describe('when includeOverflow is used', function () {
+      it('will return the slot bridging over the start time', function (done) {
+        let slots = timeSlotter('10:35','16:56', 65, {
+          includeOverflow: true,
+          pushToEndTime: true
+        })
+        expect(slots[0][0]).to.be.equal('10:26')
+        expect(slots[0][1]).to.be.equal(slots[1][0])
+        expect(slots.length).to.be.equal(6)
+        expect(slots[5][1]).to.be.equal('16:56')
         done()
       })
     })
