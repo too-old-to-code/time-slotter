@@ -24,6 +24,26 @@ describe('gives correct timeslots', function () {
     })
   })
 
+  describe('with delimiter option used',function(){
+    it('without crossing midnight', function(done) {
+      let slots = timeSlotter('09:00', '12:30', 50, { delimiter: '.'})
+      expect(slots[0][0]).to.be.equal('09.00')
+      expect(slots[0][1]).to.be.equal(slots[1][0])
+      expect(slots.length).to.be.equal(4)
+      expect(slots[3][1]).to.be.equal('12.20')
+      done()
+    })
+
+    it('crossing midnight', function (done) {
+      let slots = timeSlotter('21:50', '00:40', 45, { delimiter: '-'})
+      expect(slots[0][0]).to.be.equal('21-50')
+      expect(slots[0][1]).to.be.equal(slots[1][0])
+      expect(slots.length).to.be.equal(3)
+      expect(slots[2][1]).to.be.equal('00-05')
+      done()
+    })
+  })
+
   describe('when timeslots start from the start time', function () {
 
     describe('using seconds as unit', function () {
@@ -199,6 +219,11 @@ describe('gives correct timeslots', function () {
       expect(slots4[0][0]).to.be.equal('23:00')
       expect(slots4.length).to.be.equal(3)
       expect(slots4[2][1]).to.be.equal('00:02')
+
+      let slots5 = timeSlotter('23:50','00:00', 4, { spacer: 1 })
+      expect(slots5[0][0]).to.be.equal('23:50')
+      expect(slots5.length).to.be.equal(2)
+      expect(slots5[1][1]).to.be.equal('23:59')
       done()
     })
 
@@ -229,6 +254,7 @@ describe('gives correct timeslots', function () {
       expect(slots4[0][0]).to.be.equal('23:00')
       expect(slots4.length).to.be.equal(4)
       expect(slots4[3][1]).to.be.equal('00:20')
+
       done()
     })
   })

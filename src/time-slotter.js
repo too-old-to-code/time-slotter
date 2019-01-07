@@ -1,6 +1,13 @@
 const timeDrift = require('time-drift')
 
 module.exports = (function () {
+  const warnMsg = {
+    DURATION_TOO_LARGE: 'The duration is too large to create even one time-slot within the times given'
+  }
+
+  const errMsg = {
+    NO_DURATION: 'You must include a positive duration value as the third argument'
+  }
 
   let _timeObject = {},
       _slotDuration,
@@ -12,22 +19,24 @@ module.exports = (function () {
       _spacer,
       _spacerUnits,
       _pushToEndTime,
-      _includeOverflow
-      _finished = false
+      _includeOverflow,
+      _finished
 
   function createTimeslots(start, end, slotDuration, options = {}) {
+    if (!slotDuration) {
+      throw new Error(errMsg.NO_DURATION)
+    }
     // this will be a singleton in a node app, so it is important
     // to reset all the variables so that one invocation doesn't
     // effect another
     let initialTime = options.pushToEndTime ? end : start
     _slots = []
     _finished = false
-    _pushToEndTime = false
     _hasEverCrossedMidnight = false
     _timeObject = timeDrift(initialTime, options.delimiter)
     _slotDuration = slotDuration
     _units = options.units || 'm'
-    _pushToEndTime = options.pushToEndTime
+    _pushToEndTime = options.pushToEndTime || false
     _spacer = options.spacer
     _spacerUnits = options.spacerUnits || 'm'
     _includeOverflow = options.includeOverflow
@@ -56,12 +65,12 @@ module.exports = (function () {
     if (_start < _end) {
       if (testTime.val > _end || testTime.hasCrossedMidnight) {
         _finished = true
-        console.warn('The duration is too too small for even one time-slot')
+        console.warn(warnMsg.DURATION_TOO_LARGE)
       }
     } else {
       if (testTime.val > _end && testTime.hasCrossedMidnight) {
         _finished = true
-        console.warn('The duration is too too small for even one time-slot')
+        console.warn(warnMsg.DURATION_TOO_LARGE)
       }
     }
   }
@@ -72,22 +81,26 @@ module.exports = (function () {
     }
   }
 
+  // when pushToEndTime is false, we begin at the start time and work our
+  // way forward to the end time
   function _incrementTime() {
     _addSlotToBack(_timeObject.val, _timeObject.add(_slotDuration, _units).val)
 
     if (_spacer) {
       _timeObject.add(_spacer, _spacerUnits)
     }
-    _checkIsMidnightCrossed()
+    _checkIsMidnightCrossed ()
   }
 
+  // when pushToEndTime is true, we begin at the end time and work our
+  // way backwards to the start time
   function _decrementTime() {
     _addSlotToFront(_timeObject.val, _timeObject.subtract(_slotDuration, _units).val)
 
     if (_spacer) {
       _timeObject.subtract(_spacer, _spacerUnits)
     }
-    _checkIsMidnightCrossed()
+    _checkIsMidnightCrossed ()
   }
 
   // if no crossing over the midnight threshold is involved

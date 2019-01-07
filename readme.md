@@ -74,7 +74,7 @@ console.log(timeSlotter('03:35', '05:30', 25, options))
 
 ```
 
-If timeslots don't fit exactly between the given times, you can decide to make the last timeslot finish exaclty on the end time, by setting the `pushToEndTime` option to true. This will push all the slots away from the start time towards the end time.
+If timeslots don't fit exactly between the given times, you can decide to make the last timeslot finish exactly on the end time, by setting the `pushToEndTime` option to true. This will push all the slots away from the start time towards the end time.
 
 ```
 let options = { joinOn: ' - ', pushToEndTime: true }
@@ -142,5 +142,26 @@ console.log(partitions)
 //  	'<------->'
 // ]
 
+
+```
+
+If you want to include a timeslot that overlaps either your start or end time (depending on whether you use `pushToEndTime`), you can set the `includeOverflow` property to true.
+
+```
+let slot = timeSlotter('12:30','12:40', 3)
+console.log(slot)
+
+//  [   [ '12:30', '12:33' ],
+//      [ '12:33', '12:36' ],
+//      [ '12:36', '12:39' ]  ]
+
+slot = timeSlotter('12:30','12:40', 3, { includeOverflow: true })
+
+console.log(slot)
+
+//  [   [ '12:30', '12:33' ],
+//      [ '12:33', '12:36' ],
+//      [ '12:36', '12:39' ],
+//      [ '12:39', '12:42' ]  ]
 
 ```
