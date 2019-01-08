@@ -6,7 +6,8 @@ module.exports = (function () {
   }
 
   const errMsg = {
-    NO_DURATION: 'You must include a positive duration value as the third argument'
+    NO_DURATION: 'You must include a positive duration value as the third argument',
+    MISSING_ARGS: 'You must enter a start and an end value as the first and second arguments'
   }
 
   let _timeObject = {},
@@ -15,7 +16,7 @@ module.exports = (function () {
       _end,
       _slots,
       _units,
-      _hasEverCrossedMidnight,
+      _crossedOverMidnightCount,
       _spacer,
       _spacerUnits,
       _pushToEndTime,
@@ -23,6 +24,9 @@ module.exports = (function () {
       _finished
 
   function createTimeslots(start, end, slotDuration, options = {}) {
+    if (!start || !end) {
+      throw new Error(errMsg.MISSING_ARGS)
+    }
     if (!slotDuration) {
       throw new Error(errMsg.NO_DURATION)
     }
@@ -32,7 +36,7 @@ module.exports = (function () {
     let initialTime = options.pushToEndTime ? end : start
     _slots = []
     _finished = false
-    _hasEverCrossedMidnight = false
+    _crossedOverMidnightCount = 0
     _timeObject = timeDrift(initialTime, options.delimiter)
     _slotDuration = slotDuration
     _units = options.units || 'm'
@@ -76,9 +80,17 @@ module.exports = (function () {
   }
 
   function _checkIsMidnightCrossed () {
+
     if (_timeObject.hasCrossedMidnight) {
-      _hasEverCrossedMidnight = true
+      _crossedOverMidnightCount ++
     }
+
+    // if midnight is passed more than once we definitely
+    // need to finish
+    if (_crossedOverMidnightCount > 1) {
+      _finished = true
+    }
+
   }
 
   // when pushToEndTime is false, we begin at the start time and work our
@@ -88,8 +100,8 @@ module.exports = (function () {
 
     if (_spacer) {
       _timeObject.add(_spacer, _spacerUnits)
+      _checkIsMidnightCrossed ()
     }
-    _checkIsMidnightCrossed ()
   }
 
   // when pushToEndTime is true, we begin at the end time and work our
@@ -99,8 +111,8 @@ module.exports = (function () {
 
     if (_spacer) {
       _timeObject.subtract(_spacer, _spacerUnits)
+      _checkIsMidnightCrossed ()
     }
-    _checkIsMidnightCrossed ()
   }
 
   // if no crossing over the midnight threshold is involved
@@ -123,7 +135,7 @@ module.exports = (function () {
   // if the time-slots required involve a crossing over the midnight
   // threshhold, we need this logic before it gets to midnight
   function _crossesMidnight() {
-    while (!_hasEverCrossedMidnight) {
+    while (!_crossedOverMidnightCount) {
       if (_pushToEndTime) {
         _decrementTime()
       } else {
@@ -135,14 +147,15 @@ module.exports = (function () {
   }
 
   function _addSlotToBack(pre, post) {
+    _checkIsMidnightCrossed()
 
     //we definitely don't want a slot if it begins on the end time, unless
     // the start and end times given were the same
-    if (pre === _end && !(_start === _end && !_hasEverCrossedMidnight)) {
+    if (pre === _end && !(_start === _end && !_crossedOverMidnightCount)) {
       _finished = true
     }
 
-    _checkIsMidnightCrossed()
+
 
     if (!_includeOverflow) {
 
@@ -151,7 +164,7 @@ module.exports = (function () {
         _finished = true
       }
 
-       // if the end time is midnight or close to it, the post
+      // if the end time is midnight or close to it, the post
       // and pre values may be either side of the midnight and
       // require this condition to realise the time-slots bridge
       // the end time
@@ -165,34 +178,34 @@ module.exports = (function () {
     }
   }
 
-  function _addSlotToFront (pre, post) {
+  function _addSlotToFront (post, pre) {
+    _checkIsMidnightCrossed()
 
     // we definitely don't want a slot if it ends on the start time
     // the start and end times given were the same
-    if (pre === _start && !(_start === _end && !_hasEverCrossedMidnight)) {
+    if (post === _start && !(_start === _end && !_crossedOverMidnightCount)) {
       _finished = true
     }
 
-    _checkIsMidnightCrossed()
-
     if (!_includeOverflow) {
       // condition to eliminate timeslots that bridge over the start time
-      if (pre > _start && post < _start) {
+      if (post > _start && pre < _start) {
         _finished = true
       }
 
-      // if the start time is midnight or close to it, the post
-      // and pre values may be either side of the midnight and
+      // if the start time is midnight or close to it, the pre
+      // and post values may be either side of the midnight and
       // require this condition to realise the time-slots bridge
       // the start time
-      if ((pre > _start && post > _start) && pre < post) {
+      if ((post > _start && pre > _start) && post < pre) {
         _finished = true
       }
     }
 
     if (!_finished) {
-      _slots.unshift([post, pre])
+      _slots.unshift([pre, post])
     }
+
   }
 
   return createTimeslots

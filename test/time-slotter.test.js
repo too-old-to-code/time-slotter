@@ -259,4 +259,26 @@ describe('gives correct timeslots', function () {
     })
   })
 
+  describe('regression tests', function () {
+    it('can pass conditions that previous versions failed', function (done) {
+      let slots1 = timeSlotter('00:02:32','00:00:19', 27, {
+        spacer: 34
+      })
+
+      expect(slots1[0][0]).to.be.equal('00:02:32')
+      expect(slots1.length).to.be.equal(24)
+      expect(slots1[23][1]).to.be.equal('23:52:32')
+
+      let slots2 = timeSlotter('00:02:32','00:00:19', 27, {
+        pushToEndTime: true,
+        spacer: 34
+      })
+
+      expect(slots2[0][0]).to.be.equal('00:10:19')
+      expect(slots2.length).to.be.equal(24)
+      expect(slots2[23][1]).to.be.equal('00:00:19')
+      done()
+    })
+  })
+
 })
