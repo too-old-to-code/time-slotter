@@ -277,6 +277,42 @@ describe('gives correct timeslots', function () {
       expect(slots2[0][0]).to.be.equal('00:10:19')
       expect(slots2.length).to.be.equal(24)
       expect(slots2[23][1]).to.be.equal('00:00:19')
+
+      let slots3 = timeSlotter('00:00', '23:57', 1, {
+        units: 'h',
+        pushToEndTime: true
+      })
+
+      expect(slots3[0][0]).to.be.equal('00:57')
+      expect(slots3.length).to.be.equal(23)
+      expect(slots3[22][1]).to.be.equal('23:57')
+
+      let slots4 = timeSlotter('00:00', '23:57', 1, {
+        units: 'h',
+        includeOverflow: true,
+        pushToEndTime: true
+      })
+
+      expect(slots4[0][0]).to.be.equal('23:57')
+      expect(slots4.length).to.be.equal(24)
+      expect(slots4[23][1]).to.be.equal('23:57')
+
+      let slots5 = timeSlotter('00:00', '23:57', 1, {
+        units: 'h'
+      })
+
+      expect(slots5[0][0]).to.be.equal('00:00')
+      expect(slots5.length).to.be.equal(23)
+      expect(slots5[22][1]).to.be.equal('23:00')
+
+      let slots6 = timeSlotter('00:00', '23:57', 1, {
+        units: 'h',
+        includeOverflow: true
+      })
+
+      expect(slots6[0][0]).to.be.equal('00:00')
+      expect(slots6.length).to.be.equal(24)
+      expect(slots6[23][1]).to.be.equal('00:00')
       done()
     })
   })

@@ -1,8 +1,11 @@
 const timeDrift = require('time-drift')
 
 module.exports = (function () {
+  const VALID_OPTIONS = [ 'units', 'spacer', 'spacerUnits', 'includeOverflow', 'pushToEndTime']
+
   const warnMsg = {
-    DURATION_TOO_LARGE: 'The duration is too large to create even one time-slot within the times given'
+    DURATION_TOO_LARGE: 'The duration is too large to create even one time-slot within the times given',
+    UNRECOGNISED_OPTION: (option) => `Unrecognised '${option}' option was provided`
   }
 
   const errMsg = {
@@ -27,9 +30,18 @@ module.exports = (function () {
     if (!start || !end) {
       throw new Error(errMsg.MISSING_ARGS)
     }
+
     if (!slotDuration) {
       throw new Error(errMsg.NO_DURATION)
     }
+
+    // Check that valid options were given
+    Object.keys(options).forEach(option => {
+      if (!VALID_OPTIONS.includes(option)) {
+        console.warn(warnMsg.UNRECOGNISED_OPTION(option))
+      }
+    })
+
     // this will be a singleton in a node app, so it is important
     // to reset all the variables so that one invocation doesn't
     // effect another
@@ -44,6 +56,7 @@ module.exports = (function () {
     _spacer = options.spacer
     _spacerUnits = options.spacerUnits || 'm'
     _includeOverflow = options.includeOverflow
+    _shouldCrossMidnight = false
 
     // I put the start and end through the timeDrift package
     // to ensure they have the same format, so that comparing
@@ -80,15 +93,21 @@ module.exports = (function () {
   }
 
   function _checkIsMidnightCrossed () {
-
-    if (_timeObject.hasCrossedMidnight) {
-      _crossedOverMidnightCount ++
+    // this was an extra check needed for some boundary conditions
+    // to ensure that if midnight was passed when not expected to
+    // from the start and end times, _finished is set to true
+    if (_crossedOverMidnightCount && !_shouldCrossMidnight) {
+      _finished = true
     }
 
     // if midnight is passed more than once we definitely
     // need to finish
     if (_crossedOverMidnightCount > 1) {
       _finished = true
+    }
+
+    if (_timeObject.hasCrossedMidnight) {
+      _crossedOverMidnightCount ++
     }
 
   }
@@ -119,7 +138,7 @@ module.exports = (function () {
   // in creating the required time-slots, this logic will
   // be used
   function _noMidnightCrossing() {
-
+    // _shouldCrossMidnight = false
     if (_pushToEndTime) {
       while ((_timeObject.val >= _start) && !_finished) {
         _decrementTime()
@@ -135,6 +154,7 @@ module.exports = (function () {
   // if the time-slots required involve a crossing over the midnight
   // threshhold, we need this logic before it gets to midnight
   function _crossesMidnight() {
+    _shouldCrossMidnight = true
     while (!_crossedOverMidnightCount) {
       if (_pushToEndTime) {
         _decrementTime()
@@ -155,12 +175,14 @@ module.exports = (function () {
       _finished = true
     }
 
-
-
     if (!_includeOverflow) {
 
       // condition to eliminate timeslots that bridge over the end time
       if (pre < _end && post > _end) {
+        _finished = true
+      }
+
+      if (pre < _end && post < _end && _timeObject.hasCrossedMidnight) {
         _finished = true
       }
 
@@ -190,6 +212,10 @@ module.exports = (function () {
     if (!_includeOverflow) {
       // condition to eliminate timeslots that bridge over the start time
       if (post > _start && pre < _start) {
+        _finished = true
+      }
+
+      if (post > _start && pre > _start && _timeObject.hasCrossedMidnight) {
         _finished = true
       }
 
