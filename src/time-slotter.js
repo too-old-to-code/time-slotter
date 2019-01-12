@@ -1,7 +1,15 @@
 const timeDrift = require('time-drift')
 
 module.exports = (function () {
-  const VALID_OPTIONS = [ 'units', 'spacer', 'spacerUnits', 'includeOverflow', 'pushToEndTime']
+  const VALID_OPTIONS = [
+    'units',
+    'spacer',
+    'spacerUnits',
+    'includeOverflow',
+    'pushToEndTime',
+    'joinOn',
+    'delimiter'
+  ]
 
   const warnMsg = {
     DURATION_TOO_LARGE: 'The duration is too large to create even one time-slot within the times given',
@@ -24,7 +32,8 @@ module.exports = (function () {
       _spacerUnits,
       _pushToEndTime,
       _includeOverflow,
-      _finished
+      _finished,
+      _shouldCrossMidnight
 
   function createTimeslots(start, end, slotDuration, options = {}) {
     if (!start || !end) {
