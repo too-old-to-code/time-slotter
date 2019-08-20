@@ -11,8 +11,9 @@
     "name": "Andrew Trigg",
     "email": "andrew.s.trigg@gmail.com"
   },
+  "homepage": "https://github.com/too-old-to-code/time-slotter",
   "dependencies": {
-    "time-drift": "^1.0.5"
+    "time-drift": "^1.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
